@@ -3,7 +3,7 @@
 
 # # Import Library
 
-# In[1]:
+# In[94]:
 
 
 import flask
@@ -18,6 +18,7 @@ import pandas as pd
 import numpy as np
 
 from datetime import datetime, date
+import math
 
 
 # # Data Load
@@ -25,8 +26,8 @@ from datetime import datetime, date
 # In[2]:
 
 
-#path = r"C:\Users\hwoar\OneDrive\바탕 화면\sw_train\튜터알바\메가스터디 과외자료\현우\git\\"
 path = ''
+#path = r"C:\Users\hwoar\OneDrive\바탕 화면\sw_train\튜터알바\메가스터디 과외자료\현우\git\\"
 koreafile = 'data_preprocessing.csv'
 worldfile = 'df_worlds.csv'
 
@@ -59,7 +60,7 @@ df_korea = df_korea.rename(columns={'규모' : 'Magnitude', 'latitude' : 'Latitu
 df_korea
 
 
-# In[6]:
+# In[95]:
 
 
 df_korea['Year5'] = pd.cut(df_korea.index.year,
@@ -76,6 +77,9 @@ df_world['Magnitude'] = df_world['Magnitude'].apply(lambda x: round(x,1))
 df_korea = df_korea.rename(columns ={'도' : 'region'})
 
 df_world.region = df_world.region.fillna('error')
+
+df_korea['size']=math.e ** (df_korea['Magnitude'])
+df_world['size']=math.e ** (df_world['Magnitude'])
 
 
 # In[7]:
@@ -201,14 +205,14 @@ fig.update_layout(spikedistance=1000, hoverdistance=100)
 fig.show()
 
 
-# In[17]:
+# In[51]:
 
 
 @capture("graph")
 def get_distplot(data_frame, w=800,h=600):
     count_max = data_frame.groupby('Magnitude')['Time'].count().max()*1.1
     mag_min = data_frame['Magnitude'].min()
-    mag_max = mag_min+0.1
+    mag_max = mag_min+0.5
 
     lower_bound = mag_min
     upper_bound = mag_max
@@ -262,7 +266,7 @@ def get_distplot(data_frame, w=800,h=600):
 
 # ## 월별 통계 - simple
 
-# In[18]:
+# In[52]:
 
 
 #기존에는 이렇게 만들엇는데,
@@ -273,7 +277,7 @@ fig.update_layout(width=800, height=600)
 fig.show()
 
 
-# In[19]:
+# In[53]:
 
 
 month_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -285,7 +289,7 @@ df_korea_sort_month = df_korea.sort_values('Month')
 df_world_sort_month = df_world.sort_values('Month')
 
 
-# In[20]:
+# In[54]:
 
 
 fig = px.histogram(df_korea_sort_month, x="Month")
@@ -293,7 +297,7 @@ fig.update_layout(width=800, height=600)
 fig.show()
 
 
-# In[21]:
+# In[55]:
 
 
 def get_month_chart_simple(df,w=800,h=600):
@@ -304,7 +308,7 @@ def get_month_chart_simple(df,w=800,h=600):
 
 # ## 월별 통계-stack
 
-# In[22]:
+# In[56]:
 
 
 fig = px.histogram(df_world, x="Month", color="Year",
@@ -316,7 +320,7 @@ fig.update_layout(width=800, height=600)
 fig.show()
 
 
-# In[23]:
+# In[57]:
 
 
 def get_month_chart_stack(df,w=800,h=600):
@@ -331,7 +335,7 @@ def get_month_chart_stack(df,w=800,h=600):
 
 # ## 월별 통계 stack 5년
 
-# In[24]:
+# In[58]:
 
 
 fig = px.histogram(df_korea, x="Month", color="Year5",
@@ -345,7 +349,7 @@ fig.update_layout(width=800, height=600)
 fig.show()
 
 
-# In[25]:
+# In[59]:
 
 
 def get_month_chart_stack5(df, w=800,h=600):
@@ -363,7 +367,7 @@ def get_month_chart_stack5(df, w=800,h=600):
 
 # ## 연도별 차트 - Trendline
 
-# In[26]:
+# In[60]:
 
 
 yearly_groups = df_world.groupby(df_world.index.year)
@@ -373,7 +377,7 @@ fig.update_layout(width=800, height=600)
 fig.show()
 
 
-# In[27]:
+# In[61]:
 
 
 yearly_groups = df_korea.groupby(df_korea.index.year)
@@ -383,7 +387,7 @@ fig.update_layout(width=800, height=600)
 fig.show()
 
 
-# In[28]:
+# In[62]:
 
 
 def get_year_chart(df,w=800,h=600):
@@ -396,7 +400,7 @@ def get_year_chart(df,w=800,h=600):
 
 # ## 연도별차트 - Range
 
-# In[29]:
+# In[63]:
 
 
 dk_mag_range = [df_korea['Magnitude'].describe()['25%'],df_korea['Magnitude'].describe()['50%']
@@ -405,7 +409,7 @@ dw_mag_range = [df_world['Magnitude'].describe()['25%'],df_world['Magnitude'].de
                 ,df_world['Magnitude'].describe()['75%'],df_world['Magnitude'].describe()['max']]
 
 
-# In[30]:
+# In[64]:
 
 
 k_magnitude_order=[str(r)+'미만' for r in dk_mag_range]
@@ -419,13 +423,7 @@ fig = px.histogram(df_korea, x='Year', color="Magnitude Range 5 Year",
 fig.show()
 
 
-# In[31]:
-
-
-df_world[df_world['Year'].isin([2015,2016])]
-
-
-# In[32]:
+# In[66]:
 
 
 w_magnitude_order=[str(r)+'미만' for r in dw_mag_range]
@@ -439,7 +437,7 @@ fig = px.histogram(df_world, x='Year', color="Magnitude Range 5 Year",
 fig.show()
 
 
-# In[33]:
+# In[67]:
 
 
 def get_mag_range(df, magnitude_order):
@@ -451,9 +449,71 @@ def get_mag_range(df, magnitude_order):
     return fig
 
 
+# # 애니메이션 지도
+
+# In[156]:
+
+
+def fetch_quakes_data(eqdf, center_lat, center_lon):
+
+
+    eqdf['Time'] = pd.to_datetime(eqdf['Time'])
+    eqdf = eqdf.sort_values(by='Time')
+
+    return eqdf, center_lat, center_lon
+
+@capture("graph")
+def visualize_quakes_data(data_frame, center_lat, center_lon,zoom, range_color):
+    eqdf, clat, clon = fetch_quakes_data(data_frame, center_lat, center_lon)
+    
+    year_i = data_frame.Year.min()
+
+    fig = px.scatter_mapbox(
+        data_frame=eqdf,
+        lat='Latitude',
+        lon='Longitude',
+        center=dict(lat=clat, lon=clon),
+        size='size',
+        color='Magnitude',
+        range_color=range_color,
+        zoom=zoom,
+        mapbox_style='carto-darkmatter',
+        color_continuous_scale=px.colors.cyclical.IceFire,
+        #color_continuous_scale=px.colors.sequential.amp,
+        animation_frame='Year',
+        title='{} 지진 발생지역 - {}년도'.format("년도별", year_i)
+    )
+
+    fig.update_layout(
+        margin=dict(l=20, r=0, t=65, b=10)
+    )
+    fig.update_layout(width=700, height=700)
+    fig.update_layout(
+        paper_bgcolor='black',  # 플롯 영역의 배경색
+        font_color='lightgray'
+    )
+
+    for frame in fig.frames:
+      year_i+=1
+      frame['layout']['title'] = '{} 지진 발생지역 - {}년도'.format("년도별", year_i)
+
+    fig['layout']['sliders'][0]['pad']=dict(l=30, t=10, b=20)
+    fig['layout']['updatemenus'][0]['pad']=dict(l=30, t=10, b=20)
+    
+    return fig
+
+
+
+# In[154]:
+
+
+korea_map = visualize_quakes_data(df_korea,36.46, 127,5, (0,6))
+korea_map
+
+
 # # vizro 시작
 
-# In[41]:
+# In[158]:
 
 
 Vizro._reset()
@@ -480,7 +540,8 @@ month_stack_w = get_month_chart_stack(df_world)
 month_stack5_w = get_month_chart_stack5(df_world)
 
 
-
+korea_map = visualize_quakes_data(df_korea,36.46, 127, 5, (0,6))
+world_map = visualize_quakes_data(df_world,36.46, 127, 0.5, (5.5,9))
 
 
 page_Korea_Magnitude = vm.Page(
@@ -519,49 +580,82 @@ page_Korea_Magnitude = vm.Page(
 
 page_Korea_Month = vm.Page(
     id="Korea Month",
-    title="한국지진 월별 분석",
-    layout=vm.Layout(grid=[[0, 0, 2],
-                           [1, 1, 3],
-                            [1, 1, 3]]),      
+    title="한국 지진 월별 분석",
+    layout=vm.Layout(grid=[[2,0, 0,0],
+                           [3,1, 1,1],
+                            [3,1, 1,1]]),      
     components=[
         vm.Graph(id="month_korea", figure=month_k),
-        vm.Graph(id="month_stack5_korea", figure=month_stack5_k), 
+        vm.Graph(id="month_stack_korea", figure=month_stack_k), 
         vm.Card(
             text="""
-                ### 지역,날짜로 필터링한 한국 지진 규모 분석&nbsp;
-                * 기본값은 2016년1월1일 - 2018년12월31일 까지 경남,경북에서 발생한 지진을 필터링 한 것입니다.
-                * 이 좁은 지역, 짧은 기간 동안 한반도 전체 지진의 1/4가 발생했습니다. 
-                * 다른 지역도 살펴보고 싶다면 왼쪽 filter를 조정해주세요
+                ### 월별로 필터링한 한국 지진 발생횟수 분석&nbsp;
+                * 월별 분석에서는 특별한 패턴이 보이진 않습니다.
+                * 9,11월에 지진이 다소 많이 발생한 것으로 보이는 데 살펴볼 필요가 있습니다.
+                * 아래의 5개년으로 묶은 그래프를 확인해주세요.
             """,
         ),   
         vm.Card(
             text="""
-                ### 지역,날짜로 필터링한 한국 지진 규모 분석&nbsp;
-                * 기본값은 2016년1월1일 - 2018년12월31일 까지 경남,경북에서 발생한 지진을 필터링 한 것입니다.
-                * 이 좁은 지역, 짧은 기간 동안 한반도 전체 지진의 1/4가 발생했습니다. 
-                * 다른 지역도 살펴보고 싶다면 왼쪽 filter를 조정해주세요
+                ### 5년씩 묶어서 월별로 필터링한 한국 지진발생횟수 분석&nbsp;
+                * 9,11월에 지진이 많이 발생한 게, 2013-2017년의 영향이 있는 것으로 보입니다.
+                * 특정 년도에 발생한 지진이 월별 패턴에 영향을 준 것으로 보입니다.
+                * 해당 년도만 제외하면 별다른 패턴이 없을 것으로 보입니다.
+                * 왼쪽 메뉴에서 년도별 그래프 분석을 확인해보세요
+                #### 해가 갈수록 지진 발생 횟수가 증가하는가?
+                * 5개년으로 묶어서 볼 경우, 최근으로 갈수록 지진이 더 발생하는 것으로 보입니다.
+                * 이는 어떤 의미일까요?
+                
             """,
         ),           
-    ]
+    ],
+    controls=[
+        vm.Filter(column="Time", targets = ['month_korea','month_stack_korea'],selector=vm.DatePicker()),
+        vm.Parameter(
+            targets=["month_stack_korea.color"],
+            selector=vm.Dropdown(
+                options=["Year", "Year5"],
+                multi=False,
+                value='Year5'
+                ),
+        ),
+    ],     
 )
 
 page_Korea_Year = vm.Page(
     id ="Korea Year",
-    title="Year",
+    title="한국 지진 년도별 분석",
     layout=vm.Layout(grid=[[0, 0, 2],
-                           [1, 1, 2],
-                            [1, 1, 2]]),     
+                           [1, 1, 3],
+                            [1, 1, 3]]),     
     components=[
         vm.Graph(id="year_korea", figure=year_k),
         vm.Graph(id="year_5_korea", figure=year_5_k),
         vm.Card(
             text="""
-                ### Card Title
-                Commodi repudiandae consequuntur voluptatum.
+                ## 연간 지진 발생 횟수
+                
+                #### 지진 발생 횟수 자체가 늘어나고 있는 것인가?
+                아님. 지진 관측 능력이 향상되어 많이 관측 되는 것.
+                #### 발생 횟수가 계단식이 아닌 점진적 증가를 나타내는 이유?
+                
+                지진관측 능력은 관측 기기의 성능보다(계단식 증가)
+                지진 관측소의 개수에 영향을 많이 받기 때문(점진적 증가)
+                
+                # 
             """,
         ),
+        vm.Card(
+            text="""
+                ### 2016-2017년도에 특히 많이 발생한 지진
+                경남,경북에서 지진이 이때 발생해서 뉴스 자주 나옴.
+                링크 : https://ko.wikipedia.org/wiki/2016%EB%85%84_%EA%B2%BD%EC%A3%BC_%EC%A7%80%EC%A7%84
+                
+            """,
+        ),        
     ],
     controls=[
+        
         vm.Parameter(
                       targets=["year_korea.trendline"],
                      selector=vm.Dropdown(
@@ -569,13 +663,31 @@ page_Korea_Year = vm.Page(
                 multi=False,
                 value="ols",
                      )),
-    
+
+        vm.Filter(column="region", targets = ['year_5_korea'], selector=vm.Dropdown()),
+        vm.Filter(column="Month", targets = ['year_5_korea'], selector=vm.Dropdown()),
     ]    
 )
 
+
+page_Korea_Map = vm.Page(
+    id ="Korea Map",
+    title="한국 지진 지도",
+#     layout=vm.Layout(grid=[[0, 0, 2],
+#                            [1, 1, 3],
+#                             [1, 1, 3]]),     
+    components=[
+        vm.Graph(id="map_korea", figure=korea_map)
+    ],
+  
+)
+
+
+
+##########외국
 page_World_Magnitude = vm.Page(
     id="World Magnitude",
-    title="Magnitude",
+    title="외국 지진 규모 분석",
     layout=vm.Layout(grid=[[0, 1],
                            [0, 1],
                             [2, 3]]),      
@@ -610,36 +722,51 @@ page_World_Magnitude = vm.Page(
 
 page_World_Month = vm.Page(
     id="World Month",
-    title="Month",
+    title="외국 지진 월별 분석",
     layout=vm.Layout(grid=[[0, 0, 2],
                            [1, 1, 3],
                             [1, 1, 3]]),    
     components=[
         vm.Graph(id="month_world", figure=month_w),
-        vm.Graph(id="month_stack5_world", figure=month_stack5_w),
+        vm.Graph(id="month_stack_world", figure=month_stack_w),
         vm.Card(
             text="""
-                ### 지역,날짜로 필터링한 한국 지진 규모 분석&nbsp;
-                * 기본값은 2016년1월1일 - 2018년12월31일 까지 경남,경북에서 발생한 지진을 필터링 한 것입니다.
-                * 이 좁은 지역, 짧은 기간 동안 한반도 전체 지진의 1/4가 발생했습니다. 
-                * 다른 지역도 살펴보고 싶다면 왼쪽 filter를 조정해주세요
+                #### 월별로 필터링한 외국 지진 발생횟수 분석&nbsp;
+                * 월별 패턴은 보이지 않습니다.
+                
             """,
         ),   
         vm.Card(
             text="""
-                ### 지역,날짜로 필터링한 한국 지진 규모 분석&nbsp;
-                * 기본값은 2016년1월1일 - 2018년12월31일 까지 경남,경북에서 발생한 지진을 필터링 한 것입니다.
-                * 이 좁은 지역, 짧은 기간 동안 한반도 전체 지진의 1/4가 발생했습니다. 
-                * 다른 지역도 살펴보고 싶다면 왼쪽 filter를 조정해주세요
+                #### 5년씩 묶어서 월별로 필터링한 외국 지진발생횟수 분석&nbsp;
+                * 마찬가지로 특별히 지진이 많이 발생하는 년도는 없는 것 같습니다.
+                * 11월 2010-2014년도에 약간 지진이 많이 발생한 것으로 보입니다.
+                * 왼쪽 filter에서 color를 Year로 바꿔서 확인해봅시다.
+                #### 해가 갈수록 지진 발생 횟수가 증가하는가?
+                * 미세하게 나마 최근으로 갈수록 지진이 더 발생하는 것으로 보입니다.
+                * 이는 어떤 의미일까요? 년도별 분석을 확인해주세요
+                
             """,
         ),           
     ],
+    controls=[
+        vm.Filter(column="Time", targets = ['month_world', 'month_stack_world'],selector=vm.DatePicker()),
+
+        vm.Parameter(
+            targets=["month_stack_world.color"],
+            selector=vm.Dropdown(
+                options=["Year", "Year5"],
+                multi=False,
+                value='Year5'
+                ),
+        ),
+    ],      
  
 )
 
 page_World_Year = vm.Page(
     id="World Year",
-    title="Year",
+    title="외국 지진 년도별 분석",
     layout=vm.Layout(grid=[[0, 0, 2],
                            [1, 1, 2],
                             [1, 1, 2]]),       
@@ -648,9 +775,9 @@ page_World_Year = vm.Page(
         vm.Graph(id="year_5_world", figure=year_5_w),
         vm.Card(
             text="""
-                # 데이터 분석
+
                 
-                ## 연간 지진 발생 횟수\n\n\n
+                ## 연간 지진 발생 횟수
                 
                 ### 지진 발생 횟수 자체가 늘어나고 있는 것인가?
                 아님. 지진 관측 능력이 향상되어 많이 관측 되는 것.
@@ -674,57 +801,26 @@ page_World_Year = vm.Page(
     ]
 )
 
-dashboard = vm.Dashboard(pages=[page_Korea_Magnitude, page_Korea_Month, page_Korea_Year,
-                                page_World_Magnitude, page_World_Month, page_World_Year],
-                         navigation=vm.Navigation(pages={"Korea" : ["Korea Magnitude","Korea Month","Korea Year"], 
-                                                         "World" : ["World Magnitude", "World Month", "World Year"]}),
+page_World_Map = vm.Page(
+    id ="World Map",
+    title="외국 지진 지도",
+#     layout=vm.Layout(grid=[[0, 0, 2],
+#                            [1, 1, 3],
+#                             [1, 1, 3]]),     
+    components=[
+        vm.Graph(id="map_world", figure=world_map)
+    ],
+)
+
+
+dashboard = vm.Dashboard(pages=[page_Korea_Magnitude, page_Korea_Month, page_Korea_Year, page_Korea_Map,
+                                page_World_Magnitude, page_World_Month, page_World_Year, page_World_Map],
+                         navigation=vm.Navigation(pages={"Korea" : ["Korea Magnitude","Korea Month","Korea Year", "Korea Map"], 
+                                                         "World" : ["World Magnitude", "World Month", "World Year", "World Map"]}),
                         theme='vizro_light')
 
-#Vizro().build(dashboard).run(host='0.0.0.0', port=8050)
-Vizro().build(dashboard).run()
-
-
-# In[35]:
-
-
-pd.__version__
-
-
-# In[37]:
-
-
-import vizro
-vizro.__version__
-
-
-# In[38]:
-
-
-get_ipython().system('pip install vizro==0.1.17')
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
+Vizro().build(dashboard).run(host='0.0.0.0', port=8050)
+#Vizro().build(dashboard).run()
 
 
 # In[ ]:
