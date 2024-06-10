@@ -25,7 +25,8 @@ from datetime import datetime, date
 # In[2]:
 
 
-path = r"C:\Users\hwoar\OneDrive\바탕 화면\sw_train\튜터알바\메가스터디 과외자료\현우\git\\"
+#path = r"C:\Users\hwoar\OneDrive\바탕 화면\sw_train\튜터알바\메가스터디 과외자료\현우\git\\"
+path = ''
 koreafile = 'data_preprocessing.csv'
 worldfile = 'df_worlds.csv'
 
@@ -452,7 +453,7 @@ def get_mag_range(df, magnitude_order):
 
 # # vizro 시작
 
-# In[34]:
+# In[41]:
 
 
 Vizro._reset()
@@ -484,7 +485,7 @@ month_stack5_w = get_month_chart_stack5(df_world)
 
 page_Korea_Magnitude = vm.Page(
     id = "Korea Magnitude",
-    title="Magnitude2",
+    title="한국 지진 규모 분석",
     layout=vm.Layout(grid=[[0, 1],
                            [0, 1],
                             [2, 3]]),      
@@ -493,7 +494,7 @@ page_Korea_Magnitude = vm.Page(
         vm.Graph(id="dist_korea_filter", figure=dist_k_filter),
         vm.Card(
             text="""
-                # 한국 지진 규모 분석&nbsp;
+                ### 한국 지진 규모 분석&nbsp;
                 * 1978년부터 현재까지 남북한 전체의 지진발생을 기록한 데이터입니다.
                 * 대부분의 지진은 규모 3.5미만입니다.&nbsp;
                 * 규모 2.0~2.1 구간에서 전체 지진의 18.7%가 발생합니다.
@@ -518,11 +519,29 @@ page_Korea_Magnitude = vm.Page(
 
 page_Korea_Month = vm.Page(
     id="Korea Month",
-    title="Month",
+    title="한국지진 월별 분석",
+    layout=vm.Layout(grid=[[0, 0, 2],
+                           [1, 1, 3],
+                            [1, 1, 3]]),      
     components=[
         vm.Graph(id="month_korea", figure=month_k),
-        vm.Graph(id="month_stack_korea", figure=month_stack_k),
-        vm.Graph(id="month_stack5_korea", figure=month_stack5_k),        
+        vm.Graph(id="month_stack5_korea", figure=month_stack5_k), 
+        vm.Card(
+            text="""
+                ### 지역,날짜로 필터링한 한국 지진 규모 분석&nbsp;
+                * 기본값은 2016년1월1일 - 2018년12월31일 까지 경남,경북에서 발생한 지진을 필터링 한 것입니다.
+                * 이 좁은 지역, 짧은 기간 동안 한반도 전체 지진의 1/4가 발생했습니다. 
+                * 다른 지역도 살펴보고 싶다면 왼쪽 filter를 조정해주세요
+            """,
+        ),   
+        vm.Card(
+            text="""
+                ### 지역,날짜로 필터링한 한국 지진 규모 분석&nbsp;
+                * 기본값은 2016년1월1일 - 2018년12월31일 까지 경남,경북에서 발생한 지진을 필터링 한 것입니다.
+                * 이 좁은 지역, 짧은 기간 동안 한반도 전체 지진의 1/4가 발생했습니다. 
+                * 다른 지역도 살펴보고 싶다면 왼쪽 filter를 조정해주세요
+            """,
+        ),           
     ]
 )
 
@@ -566,7 +585,7 @@ page_World_Magnitude = vm.Page(
         vm.Card(
             id = 'typewriter',
             text="""  
-                # 외국 지진 규모 분석&nbsp;
+                ### 외국 지진 규모 분석&nbsp;
                 * 1965년부터 현재까지 세계각지의 지진발생을 기록한 데이터입니다.
                 * 5.5미만의 여진은 기록되지 않은 데이터입니다.
                 * 대부분의 지진은 규모 6미만입니다.&nbsp;
@@ -593,12 +612,27 @@ page_World_Month = vm.Page(
     id="World Month",
     title="Month",
     layout=vm.Layout(grid=[[0, 0, 2],
-                           [1, 1, 2],
-                            [1, 1, 2]]),    
+                           [1, 1, 3],
+                            [1, 1, 3]]),    
     components=[
         vm.Graph(id="month_world", figure=month_w),
-        vm.Graph(id="month_stack_world", figure=month_stack_w),
         vm.Graph(id="month_stack5_world", figure=month_stack5_w),
+        vm.Card(
+            text="""
+                ### 지역,날짜로 필터링한 한국 지진 규모 분석&nbsp;
+                * 기본값은 2016년1월1일 - 2018년12월31일 까지 경남,경북에서 발생한 지진을 필터링 한 것입니다.
+                * 이 좁은 지역, 짧은 기간 동안 한반도 전체 지진의 1/4가 발생했습니다. 
+                * 다른 지역도 살펴보고 싶다면 왼쪽 filter를 조정해주세요
+            """,
+        ),   
+        vm.Card(
+            text="""
+                ### 지역,날짜로 필터링한 한국 지진 규모 분석&nbsp;
+                * 기본값은 2016년1월1일 - 2018년12월31일 까지 경남,경북에서 발생한 지진을 필터링 한 것입니다.
+                * 이 좁은 지역, 짧은 기간 동안 한반도 전체 지진의 1/4가 발생했습니다. 
+                * 다른 지역도 살펴보고 싶다면 왼쪽 filter를 조정해주세요
+            """,
+        ),           
     ],
  
 )
@@ -646,31 +680,27 @@ dashboard = vm.Dashboard(pages=[page_Korea_Magnitude, page_Korea_Month, page_Kor
                                                          "World" : ["World Magnitude", "World Month", "World Year"]}),
                         theme='vizro_light')
 
+#Vizro().build(dashboard).run(host='0.0.0.0', port=8050)
 Vizro().build(dashboard).run()
 
 
-# In[ ]:
+# In[35]:
 
 
+pd.__version__
 
 
-
-# In[ ]:
-
+# In[37]:
 
 
+import vizro
+vizro.__version__
 
 
-# In[ ]:
+# In[38]:
 
 
-
-
-
-# In[ ]:
-
-
-
+get_ipython().system('pip install vizro==0.1.17')
 
 
 # In[ ]:
